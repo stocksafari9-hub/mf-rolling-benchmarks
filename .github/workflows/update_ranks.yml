@@ -2,20 +2,25 @@ name: Daily Benchmark Update
 
 on:
   schedule:
-    # Runs at 21:00 UTC every day (which is 2:30 AM IST)
     - cron: '0 21 * * *'
-  workflow_dispatch: # Allows you to run it manually by clicking a button
+  workflow_dispatch:
+
+# THIS IS THE FIX: Explicitly grants the script permission to save the JSON file
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Updated to v4 to eliminate the Node.js deprecation warning
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Updated to v5
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
