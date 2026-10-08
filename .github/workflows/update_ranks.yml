@@ -5,7 +5,6 @@ on:
     - cron: '0 21 * * *'
   workflow_dispatch:
 
-# THIS IS THE FIX: Explicitly grants the script permission to save the JSON file
 permissions:
   contents: write
 
@@ -14,11 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Updated to v4 to eliminate the Node.js deprecation warning
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Updated to v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -32,10 +29,10 @@ jobs:
       - name: Run Rolling Return Engine
         run: python main.py
 
-      - name: Commit and Push ranks.json
+      - name: Commit and Push Data
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ranks.json
-          git commit -m "Auto-update median rolling returns" || echo "No changes to commit"
+          git add ranks.json latest_navs.json
+          git commit -m "Auto-update daily NAVs and median returns" || echo "No changes to commit"
           git push
