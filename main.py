@@ -6,13 +6,15 @@ from datetime import datetime
 
 # Exact AMFI Scheme Codes for the Official Passive Index Funds
 INDEX_PROXIES = {
-    "NIFTY 50": "147794",              # Motilal Oswal Nifty 50 Index Fund Direct G
-    "NIFTY NEXT 50": "147796",         # Motilal Oswal Nifty Next 50 Index Fund Direct G
-    "NIFTY 500": "147625",             # Motilal Oswal Nifty 500 Index Fund Direct G
-    "NIFTY MIDCAP 150": "147622",      # Motilal Oswal Nifty Midcap 150 Index Fund Direct G
-    "NIFTY SMALLCAP 250": "147623",    # Motilal Oswal Nifty Smallcap 250 Index Fund Direct G
-    "NIFTY BANK": "147620",            # Motilal Oswal Nifty Bank Index Fund Direct G
-    "NASDAQ 100": "145552"             # Motilal Oswal Nasdaq 100 FoF Direct G
+    "NIFTY 50": "147794",              
+    "NIFTY NEXT 50": "147796",         
+    "NIFTY 500": "147625",             
+    "NIFTY MIDCAP 150": "147622",      
+    "NIFTY SMALLCAP 250": "147623",    
+    "NIFTY LARGE MIDCAP 250": "152156",
+    "NIFTY MIDCAP 150 MOMENTUM 50": "150738",
+    "NIFTY BANK": "147620",            
+    "NASDAQ 100": "145552"             
 }
 
 def fetch_nav_history(scheme_code):
@@ -32,24 +34,50 @@ def fetch_nav_history(scheme_code):
     return df
 
 def calculate_rolling_returns(df):
-    # Assume 252 trading days in a year
     periods = {'1Y': 252, '3Y': 252 * 3, '5Y': 252 * 5}
     results = {}
-    
     for label, days in periods.items():
         if len(df) > days:
-            # Shift the series by 'days' to simulate the buy price X years ago
             df[f'nav_ago_{label}'] = df['nav'].shift(days)
-            # Calculate the point-to-point CAGR for that specific rolling window
             years = days / 252
             rolling_cagr = ((df['nav'] / df[f'nav_ago_{label}']) ** (1 / years)) - 1
-            # Extract the median of all those overlapping rolling periods
             median_return = rolling_cagr.median() * 100
             results[label] = round(median_return, 2)
         else:
             results[label] = "-"
-            
     return results
+
+def fetch_amfi_navs():
+    print("Downloading latest AMFI NAVs...")
+    url = "https://www.amfiindia.com/spages/NAVAll.txt"
+    response = requests.get(url, timeout=10)
+    nav_dict = {}
+    if response.status_code == 200:
+        lines = response.text.split('\n')
+        for line in lines:
+            cols = line.split(';')
+            if len(cols) >= 6:
+                nav_str = cols[-2].strip()
+                date_str = cols[-1].strip()
+                if nav_str and nav_str != 'N.A.':
+                    try:
+                        nav_val = float(nav_str)
+                        scheme_code = cols[0].strip()
+                        nav_obj = {"nav": nav_val, "date": date_str, "schemeCode": scheme_code}
+                        
+                        isin1 = cols[1].strip().upper()
+                        if isin1 and isin1 != '-':
+                            nav_dict[isin1] = nav_obj
+                        
+                        isin2 = cols[2].strip().upper()
+                        if isin2 and isin2 != '-':
+                            nav_dict[isin2] = nav_obj
+                    except ValueError:
+                        pass
+    
+    with open('latest_navs.json', 'w') as f:
+        json.dump(nav_dict, f)
+    print(f"Successfully saved {len(nav_dict)} ISINs to latest_navs.json")
 
 def main():
     final_output = {
@@ -61,7 +89,6 @@ def main():
         print(f"Processing {index_name}...")
         df = fetch_nav_history(code)
         if df is not None:
-            # Get latest NAV for Shadow XIRR mapping
             latest_nav = df.iloc[-1]['nav']
             latest_date = df.iloc[-1]['date'].strftime('%Y-%m-%d')
             rolling = calculate_rolling_returns(df)
@@ -77,6 +104,9 @@ def main():
     with open('ranks.json', 'w') as f:
         json.dump(final_output, f, indent=4)
     print("Successfully generated ranks.json")
+    
+    # Run the new AMFI scraping function
+    fetch_amfi_navs()
 
 if __name__ == "__main__":
     main()
