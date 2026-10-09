@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-10-09 00:52:05 UTC",
+    "last_updated": "2026-10-09 09:27:53 UTC",
     "indices": {
         "NIFTY 50": {
             "latest_nav": 19.4137,
@@ -37,25 +37,11 @@
             "rolling_5Y": 26.53
         },
         "NIFTY LARGE MIDCAP 250": {
-            "latest_nav": 13.3327,
+            "latest_nav": 16.0972,
             "nav_date": "2026-10-08",
-            "rolling_1Y": 6.22,
-            "rolling_3Y": "-",
+            "rolling_1Y": 10.4,
+            "rolling_3Y": 17.86,
             "rolling_5Y": "-"
-        },
-        "NIFTY MIDCAP 150 MOMENTUM 50": {
-            "latest_nav": 17.5899,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 8.37,
-            "rolling_3Y": 21.7,
-            "rolling_5Y": "-"
-        },
-        "NIFTY BANK": {
-            "latest_nav": 20.2869,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 12.71,
-            "rolling_3Y": 13.09,
-            "rolling_5Y": 12.72
         },
         "NASDAQ 100": {
             "latest_nav": 68.5867,
