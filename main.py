@@ -4,16 +4,14 @@ import numpy as np
 import json
 from datetime import datetime
 
-# Exact AMFI Scheme Codes for the Official Passive Index Funds
+# Exact AMFI Scheme Codes for the Official Passive Index Proxies
 INDEX_PROXIES = {
     "NIFTY 50": "147794",              
     "NIFTY NEXT 50": "147796",         
     "NIFTY 500": "147625",             
     "NIFTY MIDCAP 150": "147622",      
     "NIFTY SMALLCAP 250": "147623",    
-    "NIFTY LARGE MIDCAP 250": "152156",
-    "NIFTY MIDCAP 150 MOMENTUM 50": "150738",
-    "NIFTY BANK": "147620",            
+    "NIFTY LARGE MIDCAP 250": "149343", # Edelweiss Large Midcap 250
     "NASDAQ 100": "145552"             
 }
 
@@ -105,7 +103,6 @@ def main():
         json.dump(final_output, f, indent=4)
     print("Successfully generated ranks.json")
     
-    # Run the new AMFI scraping function
     fetch_amfi_navs()
 
 if __name__ == "__main__":
