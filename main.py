@@ -1,10 +1,13 @@
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import pandas as pd
 import numpy as np
 import json
 import time
 from datetime import datetime
 
+# Exact AMFI Scheme Codes for the Official Passive Index Proxies
 INDEX_PROXIES = {
     "NIFTY 50": "147794",              
     "NIFTY NEXT 50": "147796",         
@@ -16,17 +19,32 @@ INDEX_PROXIES = {
     "NIFTY LIQUID INDEX": "119800"      
 }
 
+# --- ROBUST NETWORK ENGINE ---
+def get_secure_session():
+    session = requests.Session()
+    # If the server throws a 429 (Too Many Requests) or 503 (Server Busy), it will auto-retry up to 10 times, pausing exponentially.
+    retry = Retry(
+        total=10,
+        read=10,
+        connect=10,
+        backoff_factor=1.5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        respect_retry_after_header=True
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    })
+    return session
+
 def categorize_fund(name):
     n = name.lower()
-    
-    # 1. Exclusion: Must be Direct Growth, Exclude Dividends & Regular
     if not (("direct" in n or "dir" in n) and ("growth" in n or "gr" in n)): return None
     if any(x in n for x in ["regular", "reg", "idcw", "dividend", "div"]): return None
-
-    # 2. Skip Passives (Index, ETF) to prevent polluting active peer groups
     if any(x in n for x in ["index", "idx", "etf", "exchange traded", "fof", "fund of fund", "child", "retirement"]): return None
     
-    # 3. Hybrids
     if "arbitrage" in n: return "Arbitrage"
     if any(x in n for x in ["balanced advantage", "baf", "dynamic asset"]): return "Balanced Advantage"
     if "multi asset" in n: return "Multi Asset"
@@ -34,7 +52,6 @@ def categorize_fund(name):
     if any(x in n for x in ["aggressive hybrid", "balanced hybrid", "equity hybrid"]): return "Aggressive Hybrid"
     if any(x in n for x in ["conservative hybrid", "debt hybrid"]): return "Conservative Hybrid"
 
-    # 4. Pure Equity
     if any(x in n for x in ["elss", "tax saver", "tax saving"]): return "ELSS"
     if any(x in n for x in ["large & mid", "large and mid", "large & midcap", "large and midcap", "largemidcap"]): return "Large & Mid Cap"
     if "small cap" in n or "smallcap" in n: return "Small Cap"
@@ -45,7 +62,6 @@ def categorize_fund(name):
     if "value" in n or "contra" in n: return "Value/Contra"
     if "focused" in n or "focus" in n: return "Focused"
 
-    # 5. Debt
     if "liquid" in n: return "Liquid"
     if "overnight" in n: return "Overnight"
     if "money market" in n: return "Money Market"
@@ -60,14 +76,12 @@ def categorize_fund(name):
     if "dynamic bond" in n: return "Dynamic Bond"
     if "gilt" in n or "constant maturity" in n: return "Gilt"
     if "floater" in n or "floating rate" in n: return "Floater"
-
-    # Fallback
     return "Sectoral/Thematic"
 
-def fetch_nav_history(scheme_code):
+def fetch_nav_history(scheme_code, session):
     try:
         url = f"https://api.mfapi.in/mf/{scheme_code}"
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=15)
         if response.status_code != 200: return None
         data = response.json().get("data", [])
         if not data: return None
@@ -77,7 +91,8 @@ def fetch_nav_history(scheme_code):
         df['nav'] = pd.to_numeric(df['nav'], errors='coerce')
         df = df.sort_values('date').reset_index(drop=True)
         return df
-    except:
+    except Exception as e:
+        print(f"Error fetching {scheme_code}: {e}")
         return None
 
 def calc_3y_median(df):
@@ -87,8 +102,10 @@ def calc_3y_median(df):
     return round(rolling_cagr.median() * 100, 2)
 
 def main():
+    session = get_secure_session()
+    
     print("Downloading AMFI List for classification...")
-    amfi_res = requests.get("https://www.amfiindia.com/spages/NAVAll.txt", timeout=10)
+    amfi_res = session.get("https://www.amfiindia.com/spages/NAVAll.txt", timeout=15)
     nav_dict = {}
     categorized_funds = {}
 
@@ -105,17 +122,14 @@ def main():
                         scheme_code = cols[0].strip()
                         fund_name = cols[3].strip()
                         
-                        # Generate the sync database for the Dashboard
                         nav_obj = {"nav": nav_val, "date": date_str, "schemeCode": scheme_code}
                         isin1, isin2 = cols[1].strip().upper(), cols[2].strip().upper()
                         if isin1 and isin1 != '-': nav_dict[isin1] = nav_obj
                         if isin2 and isin2 != '-': nav_dict[isin2] = nav_obj
                         
-                        # Extract all Direct Growth Active funds for Peer Ranking
                         category = categorize_fund(fund_name)
                         if category:
                             if category not in categorized_funds: categorized_funds[category] = []
-                            # Clean the name to look nice on the dashboard
                             clean_name = fund_name.replace('- Direct Plan', '').replace('- Direct', '').replace('Growth', '').replace('-  ', '').strip()
                             categorized_funds[category].append({"code": scheme_code, "name": clean_name})
                     except ValueError: pass
@@ -132,36 +146,33 @@ def main():
 
     print("Fetching Global Indices...")
     for index_name, code in INDEX_PROXIES.items():
-        df = fetch_nav_history(code)
+        df = fetch_nav_history(code, session)
         if df is not None:
             final_output["indices"][index_name] = {
                 "rolling_3Y": calc_3y_median(df) or "-"
             }
-        time.sleep(0.5)
+        time.sleep(1) # Polite throttle
 
     print("Calculating True Peer Group Percentiles...")
     for category, funds in categorized_funds.items():
         print(f"Processing Category: {category} ({len(funds)} funds)")
         returns_list = []
         for f in funds:
-            df = fetch_nav_history(f["code"])
+            df = fetch_nav_history(f["code"], session)
             med_3y = calc_3y_median(df)
             if med_3y is not None:
                 returns_list.append({"name": f["name"], "return_3y": med_3y})
-            time.sleep(0.5) # The critical safe-throttle
+            time.sleep(1) # Core Throttle - prevents IP ban
             
         if not returns_list: continue
 
-        # Sort highest to lowest
         returns_list.sort(key=lambda x: x["return_3y"], reverse=True)
         
-        # Calculate Mathematical Percentiles
         just_returns = [x["return_3y"] for x in returns_list]
         q1_bound = round(np.percentile(just_returns, 75), 2)
         q2_bound = round(np.percentile(just_returns, 50), 2)
         q3_bound = round(np.percentile(just_returns, 25), 2)
 
-        # Extract the Top 3 Fund Names & Returns
         top_3 = []
         for top_f in returns_list[:3]:
             top_3.append(f"{top_f['name']} ({top_f['return_3y']}%)")
