@@ -1,61 +1,30 @@
 {
-    "last_updated": "2026-10-09 09:48:17 UTC",
+    "last_updated": "2026-10-09 17:56:50 UTC",
     "indices": {
         "NIFTY 50": {
-            "latest_nav": 19.4137,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 11.92,
-            "rolling_3Y": 15.02,
-            "rolling_5Y": 15.14
+            "rolling_3Y": 15.02
         },
         "NIFTY NEXT 50": {
-            "latest_nav": 24.3169,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 11.69,
-            "rolling_3Y": 19.24,
-            "rolling_5Y": 17.25
+            "rolling_3Y": 19.24
         },
         "NIFTY 500": {
-            "latest_nav": 25.2821,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 12.39,
-            "rolling_3Y": 17.51,
-            "rolling_5Y": 17.99
+            "rolling_3Y": 17.51
         },
         "NIFTY MIDCAP 150": {
-            "latest_nav": 38.6922,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 19.79,
-            "rolling_3Y": 25.24,
-            "rolling_5Y": 26.32
+            "rolling_3Y": 25.24
         },
         "NIFTY SMALLCAP 250": {
-            "latest_nav": 39.188,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 18.39,
-            "rolling_3Y": 25.11,
-            "rolling_5Y": 26.53
+            "rolling_3Y": 25.11
         },
         "NIFTY LARGE MIDCAP 250": {
-            "latest_nav": 16.0972,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 10.4,
-            "rolling_3Y": 17.86,
-            "rolling_5Y": "-"
+            "rolling_3Y": 17.86
         },
         "NASDAQ 100": {
-            "latest_nav": 68.5867,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 34.12,
-            "rolling_3Y": 19.37,
-            "rolling_5Y": 23.96
+            "rolling_3Y": 19.37
         },
         "NIFTY LIQUID INDEX": {
-            "latest_nav": 4459.7331,
-            "nav_date": "2026-10-08",
-            "rolling_1Y": 5.3,
-            "rolling_3Y": 5.09,
-            "rolling_5Y": 4.95
+            "rolling_3Y": 5.09
         }
-    }
+    },
+    "peer_groups": {}
 }
