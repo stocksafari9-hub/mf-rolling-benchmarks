@@ -4,15 +4,16 @@ import numpy as np
 import json
 from datetime import datetime
 
-# Exact AMFI Scheme Codes for the Official Passive Index Proxies
+# Exact AMFI Scheme Codes for the Official Passive Index Proxies & Benchmarks
 INDEX_PROXIES = {
     "NIFTY 50": "147794",              
     "NIFTY NEXT 50": "147796",         
     "NIFTY 500": "147625",             
     "NIFTY MIDCAP 150": "147622",      
     "NIFTY SMALLCAP 250": "147623",    
-    "NIFTY LARGE MIDCAP 250": "149343", # Edelweiss Large Midcap 250
-    "NASDAQ 100": "145552"             
+    "NIFTY LARGE MIDCAP 250": "149343", 
+    "NASDAQ 100": "145552",
+    "NIFTY LIQUID INDEX": "119800"      
 }
 
 def fetch_nav_history(scheme_code):
