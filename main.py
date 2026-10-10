@@ -61,7 +61,7 @@ def categorize_fund(name):
     if "low duration" in n: return "Low Duration"
     if "short duration" in n or "short term" in n: return "Short Duration"
     if "medium duration" in n: return "Medium Duration"
-    if any(x in n for x in ["long duration", "long term", "medium to long"]): return "Long Duration"
+    if any(x in n for x in ["long duration", "medium to long"]) or ("long term" in n and "advantage" not in n and "equity" not in n): return "Long Duration"
     if "corporate bond" in n: return "Corporate Bond"
     if "banking & psu" in n or "banking and psu" in n: return "Banking & PSU"
     if "credit risk" in n: return "Credit Risk"
