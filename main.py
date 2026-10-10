@@ -26,10 +26,15 @@ def get_secure_session():
 
 def categorize_fund(name):
     n = name.lower()
+    
+    # 1. Exclusion: Must be Direct Growth, Exclude Dividends, IDCW, & Regular
     if not (("direct" in n or "dir" in n) and ("growth" in n or "gr" in n)): return None
-    if any(x in n for x in ["regular", "reg", "idcw", "dividend", "div"]): return None
+    if any(x in n for x in ["regular", "reg", "idcw", "dividend", "div", "income distribution", "withdrawal"]): return None
+    
+    # 2. Skip Passives
     if any(x in n for x in ["index", "idx", "etf", "exchange traded", "fof", "fund of fund", "child", "retirement"]): return None
     
+    # 3. Hybrids
     if "arbitrage" in n: return "Arbitrage"
     if any(x in n for x in ["balanced advantage", "baf", "dynamic asset"]): return "Balanced Advantage"
     if "multi asset" in n: return "Multi Asset"
@@ -37,6 +42,7 @@ def categorize_fund(name):
     if any(x in n for x in ["aggressive hybrid", "balanced hybrid", "equity hybrid"]): return "Aggressive Hybrid"
     if any(x in n for x in ["conservative hybrid", "debt hybrid"]): return "Conservative Hybrid"
 
+    # 4. Pure Equity
     if any(x in n for x in ["elss", "tax saver", "tax saving"]): return "ELSS"
     if any(x in n for x in ["large & mid", "large and mid", "large & midcap", "large and midcap", "largemidcap"]): return "Large & Mid Cap"
     if "small cap" in n or "smallcap" in n: return "Small Cap"
@@ -47,6 +53,7 @@ def categorize_fund(name):
     if "value" in n or "contra" in n: return "Value/Contra"
     if "focused" in n or "focus" in n: return "Focused"
 
+    # 5. Debt
     if "liquid" in n: return "Liquid"
     if "overnight" in n: return "Overnight"
     if "money market" in n: return "Money Market"
@@ -61,6 +68,8 @@ def categorize_fund(name):
     if "dynamic bond" in n: return "Dynamic Bond"
     if "gilt" in n or "constant maturity" in n: return "Gilt"
     if "floater" in n or "floating rate" in n: return "Floater"
+    
+    # Fallback
     return "Sectoral/Thematic"
 
 def fetch_nav_history(scheme_code, session):
@@ -99,7 +108,6 @@ def main():
         lines = amfi_res.text.split('\n')
         for line in lines:
             cols = line.split(';')
-            # The new AMFI format has 8 columns. NAV is at -2, Date is at -1.
             if len(cols) >= 6:
                 nav_str = cols[-2].strip()
                 date_str = cols[-1].strip()
@@ -108,8 +116,7 @@ def main():
                         nav_val = float(nav_str)
                         scheme_code = cols[0].strip()
                         
-                        # Fix: Dynamically combine all columns between ISIN and NAV
-                        # This stitches Scheme Name, Plan, and Option back into one string
+                        # Dynamically combine Scheme Name, Plan, and Option
                         fund_name_parts = [c.strip() for c in cols[3:-2] if c.strip()]
                         full_fund_name = " - ".join(fund_name_parts)
                         
@@ -121,9 +128,7 @@ def main():
                         category = categorize_fund(full_fund_name)
                         if category:
                             if category not in categorized_funds: categorized_funds[category] = []
-                            # Clean the name for the UI
                             clean_name = full_fund_name.replace('- Direct Plan', '').replace('- Direct', '').replace('- Growth Option', '').replace('- Growth', '').replace('Growth', '').replace('-  ', '').strip()
-                            # Prevent duplicates from sub-options
                             if not any(f['code'] == scheme_code for f in categorized_funds[category]):
                                 categorized_funds[category].append({"code": scheme_code, "name": clean_name})
                     except ValueError: pass
@@ -132,21 +137,13 @@ def main():
         json.dump(nav_dict, f)
     print(f"Saved latest_navs.json with {len(nav_dict)} ISINs")
 
-    # --- DIAGNOSTIC LOG ---
     print("\n==================================================")
     print("      AMFI HIERARCHY CLASSIFICATION REPORT")
     print("==================================================")
     total_active = sum(len(funds) for funds in categorized_funds.values())
     print(f"Total Direct Growth Active Funds Detected: {total_active}")
-    print("-" * 50)
-    
     for cat, funds in sorted(categorized_funds.items()):
         print(f"{cat}: {len(funds)} funds")
-    
-    print("\n--- Small Cap Category Sample ---")
-    small_caps = categorized_funds.get("Small Cap", [])
-    for f in small_caps[:5]:  # Print first 5 as a sample
-        print(f" - {f['code']} : {f['name']}")
     print("==================================================\n")
 
     final_output = {
@@ -165,79 +162,81 @@ def main():
             print(f" -> Failed: {index_name}")
         time.sleep(3) 
 
-    # --- TRIAL TARGET: SMALL CAP ONLY ---
-    target_category = "Small Cap"
-    funds_to_process = categorized_funds.get(target_category, [])
+    print("\n3. STARTING FULL MARKET PEER GROUP ANALYSIS")
     
-    if not funds_to_process:
-        print(f"\nCRITICAL ERROR: No {target_category} funds found. Check parser.")
-        return
+    # Process all categories except Sectoral/Thematic
+    for category, funds_to_process in sorted(categorized_funds.items()):
+        if category == "Sectoral/Thematic":
+            print(f"\n--- SKIPPING: {category} (Meaningless Quartiles) ---")
+            continue
+            
+        if len(funds_to_process) < 3:
+            print(f"\n--- SKIPPING: {category} (Insufficient Peers: {len(funds_to_process)}) ---")
+            continue
 
-    print(f"\n3. STARTING TRIAL: Fetching {len(funds_to_process)} {target_category} Funds")
-    
-    successful_returns = []
-    failed_queue = []
-
-    # Round 1: Initial Fetch
-    for idx, f in enumerate(funds_to_process, 1):
-        print(f"[{idx}/{len(funds_to_process)}] Requesting {f['name']}...")
-        df = fetch_nav_history(f["code"], session)
+        print(f"\n--- PROCESSING CATEGORY: {category} ({len(funds_to_process)} Funds) ---")
         
-        if df is not None:
-            med_3y = calc_3y_median(df)
-            if med_3y is not None:
-                successful_returns.append({"name": f["name"], "return_3y": med_3y})
-                print(f"  -> Valid Data Received. Median: {med_3y}%")
-            else:
-                print(f"  -> Data Received, but not enough history (skipped).")
-        else:
-            print(f"  -> CONNECTION FAILED/DROPPED. Adding to Retry Queue.")
-            failed_queue.append(f)
-        
-        time.sleep(3)
+        successful_returns = []
+        failed_queue = []
 
-    # Round 2: Retry Queue
-    if failed_queue:
-        print(f"\n4. PROCESSING RETRY QUEUE: {len(failed_queue)} funds pending...")
-        dead_letter_log = []
-        for idx, f in enumerate(failed_queue, 1):
-            print(f"[{idx}/{len(failed_queue)}] Retrying {f['name']}...")
+        # Round 1: Initial Fetch
+        for idx, f in enumerate(funds_to_process, 1):
+            print(f"[{idx}/{len(funds_to_process)}] {f['name']}...", end=" ", flush=True)
             df = fetch_nav_history(f["code"], session)
             
             if df is not None:
                 med_3y = calc_3y_median(df)
                 if med_3y is not None:
                     successful_returns.append({"name": f["name"], "return_3y": med_3y})
-                    print(f"  -> SUCCESS ON RETRY. Median: {med_3y}%")
+                    print(f"Data OK ({med_3y}%)")
+                else:
+                    print(f"Skipped (Insufficient History)")
             else:
-                print(f"  -> PERMANENT FAILURE. Adding to Dead Letter Log.")
-                dead_letter_log.append(f)
+                print(f"DROPPED -> Queue")
+                failed_queue.append(f)
             
             time.sleep(3)
 
-        if dead_letter_log:
-            print("\n!!! ERROR REPORT: The following funds permanently failed !!!")
-            for dead in dead_letter_log:
-                print(f" - Code: {dead['code']} | Name: {dead['name']}")
-    else:
-        print("\n4. Retry Queue Empty. All funds fetched successfully on the first pass.")
+        # Round 2: Retry Queue
+        if failed_queue:
+            print(f"\n   -> PROCESSING RETRIES: {len(failed_queue)} funds pending...")
+            dead_letter_log = []
+            for idx, f in enumerate(failed_queue, 1):
+                print(f"   [Retry {idx}/{len(failed_queue)}] {f['name']}...", end=" ", flush=True)
+                df = fetch_nav_history(f["code"], session)
+                
+                if df is not None:
+                    med_3y = calc_3y_median(df)
+                    if med_3y is not None:
+                        successful_returns.append({"name": f["name"], "return_3y": med_3y})
+                        print(f"SUCCESS ({med_3y}%)")
+                    else:
+                        print(f"Skipped (Insufficient History)")
+                else:
+                    print(f"DEAD LETTER")
+                    dead_letter_log.append(f)
+                
+                time.sleep(3)
 
-    # Calculate Quartiles
-    if successful_returns:
-        print(f"\n5. Calculating Percentiles for {len(successful_returns)} active funds...")
-        successful_returns.sort(key=lambda x: x["return_3y"], reverse=True)
-        
-        just_returns = [x["return_3y"] for x in successful_returns]
-        final_output["peer_groups"][target_category] = {
-            "q1": round(float(np.percentile(just_returns, 75)), 2),
-            "q2": round(float(np.percentile(just_returns, 50)), 2),
-            "q3": round(float(np.percentile(just_returns, 25)), 2),
-            "top_3": [f"{f['name']} ({f['return_3y']}%)" for f in successful_returns[:3]]
-        }
+            if dead_letter_log:
+                print(f"   !!! {len(dead_letter_log)} funds permanently failed to fetch.")
+
+        # Calculate Quartiles
+        if successful_returns:
+            successful_returns.sort(key=lambda x: x["return_3y"], reverse=True)
+            just_returns = [x["return_3y"] for x in successful_returns]
+            
+            final_output["peer_groups"][category] = {
+                "q1": round(float(np.percentile(just_returns, 75)), 2),
+                "q2": round(float(np.percentile(just_returns, 50)), 2),
+                "q3": round(float(np.percentile(just_returns, 25)), 2),
+                "top_3": [f"{f['name']} ({f['return_3y']}%)" for f in successful_returns[:3]]
+            }
 
     with open('ranks.json', 'w') as f:
         json.dump(final_output, f, indent=4)
-    print("\nDone! ranks.json generated successfully.")
+    print("\n==================================================")
+    print("Done! Institutional ranks.json generated successfully.")
 
 if __name__ == "__main__":
     main()
