@@ -1,8 +1,8 @@
 {
-    "last_updated": "2026-10-09 18:30:16 UTC",
+    "last_updated": "2026-10-10 00:23:57 UTC",
     "indices": {
         "NIFTY 50": {
-            "rolling_3Y": 15.02
+            "rolling_3Y": 15.01
         },
         "NIFTY NEXT 50": {
             "rolling_3Y": 19.24
@@ -11,16 +11,16 @@
             "rolling_3Y": 17.51
         },
         "NIFTY MIDCAP 150": {
-            "rolling_3Y": 25.24
+            "rolling_3Y": 25.23
         },
         "NIFTY SMALLCAP 250": {
-            "rolling_3Y": 25.11
+            "rolling_3Y": 25.1
         },
         "NIFTY LARGE MIDCAP 250": {
-            "rolling_3Y": 17.86
+            "rolling_3Y": 17.85
         },
         "NASDAQ 100": {
-            "rolling_3Y": 19.37
+            "rolling_3Y": 19.39
         },
         "NIFTY LIQUID INDEX": {
             "rolling_3Y": 5.09
