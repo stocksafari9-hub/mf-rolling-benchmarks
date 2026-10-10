@@ -31,8 +31,8 @@ def categorize_fund(name):
     if not (("direct" in n or "dir" in n) and ("growth" in n or "gr" in n)): return None
     if any(x in n for x in ["regular", "reg", "idcw", "dividend", "div", "income distribution", "withdrawal"]): return None
     
-    # 2. Skip Passives
-    if any(x in n for x in ["index", "idx", "etf", "exchange traded", "fof", "fund of fund", "child", "retirement"]): return None
+    # 2. Skip Passives, Closed-Ended Series, & International Funds
+    if any(x in n for x in ["index", "idx", "etf", "exchange traded", "fof", "fund of fund", "child", "retirement", "series", "offshore", "global", "international"]): return None
     
     # 3. Hybrids
     if "arbitrage" in n: return "Arbitrage"
@@ -43,7 +43,7 @@ def categorize_fund(name):
     if any(x in n for x in ["conservative hybrid", "debt hybrid"]): return "Conservative Hybrid"
 
     # 4. Pure Equity
-    if any(x in n for x in ["elss", "tax saver", "tax saving"]): return "ELSS"
+    if any(x in n for x in ["elss", "tax saver", "tax saving", "tax fund"]): return "ELSS"
     if any(x in n for x in ["large & mid", "large and mid", "large & midcap", "large and midcap", "largemidcap"]): return "Large & Mid Cap"
     if "small cap" in n or "smallcap" in n: return "Small Cap"
     if "mid cap" in n or "midcap" in n: return "Mid Cap"
@@ -61,6 +61,7 @@ def categorize_fund(name):
     if "low duration" in n: return "Low Duration"
     if "short duration" in n or "short term" in n: return "Short Duration"
     if "medium duration" in n: return "Medium Duration"
+    # Safely route Long Duration Debt while blocking Equity 'Advantage' funds
     if any(x in n for x in ["long duration", "medium to long"]) or ("long term" in n and "advantage" not in n and "equity" not in n): return "Long Duration"
     if "corporate bond" in n: return "Corporate Bond"
     if "banking & psu" in n or "banking and psu" in n: return "Banking & PSU"
