@@ -99,6 +99,7 @@ def main():
         lines = amfi_res.text.split('\n')
         for line in lines:
             cols = line.split(';')
+            # The new AMFI format has 8 columns. NAV is at -2, Date is at -1.
             if len(cols) >= 6:
                 nav_str = cols[-2].strip()
                 date_str = cols[-1].strip()
@@ -106,23 +107,47 @@ def main():
                     try:
                         nav_val = float(nav_str)
                         scheme_code = cols[0].strip()
-                        fund_name = cols[3].strip()
+                        
+                        # Fix: Dynamically combine all columns between ISIN and NAV
+                        # This stitches Scheme Name, Plan, and Option back into one string
+                        fund_name_parts = [c.strip() for c in cols[3:-2] if c.strip()]
+                        full_fund_name = " - ".join(fund_name_parts)
                         
                         nav_obj = {"nav": nav_val, "date": date_str, "schemeCode": scheme_code}
                         isin1, isin2 = cols[1].strip().upper(), cols[2].strip().upper()
                         if isin1 and isin1 != '-': nav_dict[isin1] = nav_obj
                         if isin2 and isin2 != '-': nav_dict[isin2] = nav_obj
                         
-                        category = categorize_fund(fund_name)
+                        category = categorize_fund(full_fund_name)
                         if category:
                             if category not in categorized_funds: categorized_funds[category] = []
-                            clean_name = fund_name.replace('- Direct Plan', '').replace('- Direct', '').replace('Growth', '').replace('-  ', '').strip()
-                            categorized_funds[category].append({"code": scheme_code, "name": clean_name})
+                            # Clean the name for the UI
+                            clean_name = full_fund_name.replace('- Direct Plan', '').replace('- Direct', '').replace('- Growth Option', '').replace('- Growth', '').replace('Growth', '').replace('-  ', '').strip()
+                            # Prevent duplicates from sub-options
+                            if not any(f['code'] == scheme_code for f in categorized_funds[category]):
+                                categorized_funds[category].append({"code": scheme_code, "name": clean_name})
                     except ValueError: pass
 
     with open('latest_navs.json', 'w') as f:
         json.dump(nav_dict, f)
     print(f"Saved latest_navs.json with {len(nav_dict)} ISINs")
+
+    # --- DIAGNOSTIC LOG ---
+    print("\n==================================================")
+    print("      AMFI HIERARCHY CLASSIFICATION REPORT")
+    print("==================================================")
+    total_active = sum(len(funds) for funds in categorized_funds.values())
+    print(f"Total Direct Growth Active Funds Detected: {total_active}")
+    print("-" * 50)
+    
+    for cat, funds in sorted(categorized_funds.items()):
+        print(f"{cat}: {len(funds)} funds")
+    
+    print("\n--- Small Cap Category Sample ---")
+    small_caps = categorized_funds.get("Small Cap", [])
+    for f in small_caps[:5]:  # Print first 5 as a sample
+        print(f" - {f['code']} : {f['name']}")
+    print("==================================================\n")
 
     final_output = {
         "last_updated": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
@@ -130,7 +155,7 @@ def main():
         "peer_groups": {}
     }
 
-    print("\n2. Fetching Global Indices (3 sec gap)...")
+    print("2. Fetching Global Indices (3 sec gap)...")
     for index_name, code in INDEX_PROXIES.items():
         df = fetch_nav_history(code, session)
         if df is not None:
@@ -144,6 +169,10 @@ def main():
     target_category = "Small Cap"
     funds_to_process = categorized_funds.get(target_category, [])
     
+    if not funds_to_process:
+        print(f"\nCRITICAL ERROR: No {target_category} funds found. Check parser.")
+        return
+
     print(f"\n3. STARTING TRIAL: Fetching {len(funds_to_process)} {target_category} Funds")
     
     successful_returns = []
@@ -165,7 +194,6 @@ def main():
             print(f"  -> CONNECTION FAILED/DROPPED. Adding to Retry Queue.")
             failed_queue.append(f)
         
-        # Initiate mandatory 3-second delay AFTER receiving response
         time.sleep(3)
 
     # Round 2: Retry Queue
@@ -187,7 +215,6 @@ def main():
             
             time.sleep(3)
 
-        # Print final error report
         if dead_letter_log:
             print("\n!!! ERROR REPORT: The following funds permanently failed !!!")
             for dead in dead_letter_log:
