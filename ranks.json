@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-10-10 02:02:44 UTC",
+    "last_updated": "2026-10-10 02:15:27 UTC",
     "indices": {
         "NIFTY 50": {
             "rolling_3Y": 15.01
@@ -26,5 +26,16 @@
             "rolling_3Y": 5.09
         }
     },
-    "peer_groups": {}
+    "peer_groups": {
+        "Small Cap": {
+            "q1": 27.96,
+            "q2": 21.62,
+            "q3": 19.85,
+            "top_3": [
+                "BANDHAN Small Cap Fund (31.95%)",
+                "BANK OF INDIA SMALL CAP FUND (31.05%)",
+                "Canara Robeco Small Cap Fund  - GROWTH OPTION (30.47%)"
+            ]
+        }
+    }
 }
