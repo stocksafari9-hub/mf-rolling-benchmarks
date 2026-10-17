@@ -43,7 +43,7 @@ def categorize_fund(name):
     if any(x in n for x in ["conservative hybrid", "debt hybrid"]): return "Conservative Hybrid"
 
     # 4. Pure Equity
-    if any(x in n for x in ["elss", "tax saver", "tax saving", "tax fund"]): return "ELSS"
+    if any(x in n for x in ["elss", "tax saver", "tax saving"]): return "ELSS"
     if any(x in n for x in ["large & mid", "large and mid", "large & midcap", "large and midcap", "largemidcap"]): return "Large & Mid Cap"
     if "small cap" in n or "smallcap" in n: return "Small Cap"
     if "mid cap" in n or "midcap" in n: return "Mid Cap"
@@ -61,7 +61,6 @@ def categorize_fund(name):
     if "low duration" in n: return "Low Duration"
     if "short duration" in n or "short term" in n: return "Short Duration"
     if "medium duration" in n: return "Medium Duration"
-    # Safely route Long Duration Debt while blocking Equity 'Advantage' funds
     if any(x in n for x in ["long duration", "medium to long"]) or ("long term" in n and "advantage" not in n and "equity" not in n): return "Long Duration"
     if "corporate bond" in n: return "Corporate Bond"
     if "banking & psu" in n or "banking and psu" in n: return "Banking & PSU"
@@ -93,9 +92,21 @@ def fetch_nav_history(scheme_code, session):
 
 def calc_3y_median(df):
     if df is None or len(df) <= 252 * 3: return None
+    
+    # Calculate rolling 3Y CAGR for all available dates
     df['nav_ago_3Y'] = df['nav'].shift(252 * 3)
-    rolling_cagr = ((df['nav'] / df['nav_ago_3Y']) ** (1 / 3)) - 1
-    return round(rolling_cagr.median() * 100, 2)
+    df['rolling_cagr'] = ((df['nav'] / df['nav_ago_3Y']) ** (1 / 3)) - 1
+    
+    # Mathematical Window Fix: Restrict median extraction strictly to the last 3 years of data
+    max_date = df['date'].max()
+    cutoff_date = max_date - pd.DateOffset(years=3)
+    
+    recent_returns = df[df['date'] >= cutoff_date]['rolling_cagr'].dropna()
+    
+    if len(recent_returns) == 0:
+        return None
+        
+    return round(recent_returns.median() * 100, 2)
 
 def main():
     session = get_secure_session()
@@ -117,7 +128,6 @@ def main():
                         nav_val = float(nav_str)
                         scheme_code = cols[0].strip()
                         
-                        # Dynamically combine Scheme Name, Plan, and Option
                         fund_name_parts = [c.strip() for c in cols[3:-2] if c.strip()]
                         full_fund_name = " - ".join(fund_name_parts)
                         
@@ -165,7 +175,6 @@ def main():
 
     print("\n3. STARTING FULL MARKET PEER GROUP ANALYSIS")
     
-    # Process all categories except Sectoral/Thematic
     for category, funds_to_process in sorted(categorized_funds.items()):
         if category == "Sectoral/Thematic":
             print(f"\n--- SKIPPING: {category} (Meaningless Quartiles) ---")
@@ -180,7 +189,6 @@ def main():
         successful_returns = []
         failed_queue = []
 
-        # Round 1: Initial Fetch
         for idx, f in enumerate(funds_to_process, 1):
             print(f"[{idx}/{len(funds_to_process)}] {f['name']}...", end=" ", flush=True)
             df = fetch_nav_history(f["code"], session)
@@ -198,7 +206,6 @@ def main():
             
             time.sleep(3)
 
-        # Round 2: Retry Queue
         if failed_queue:
             print(f"\n   -> PROCESSING RETRIES: {len(failed_queue)} funds pending...")
             dead_letter_log = []
@@ -219,10 +226,6 @@ def main():
                 
                 time.sleep(3)
 
-            if dead_letter_log:
-                print(f"   !!! {len(dead_letter_log)} funds permanently failed to fetch.")
-
-        # Calculate Quartiles
         if successful_returns:
             successful_returns.sort(key=lambda x: x["return_3y"], reverse=True)
             just_returns = [x["return_3y"] for x in successful_returns]
