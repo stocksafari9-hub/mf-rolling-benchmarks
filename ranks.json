@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-10-17 22:47:34 UTC",
+    "last_updated": "2026-10-18 22:41:34 UTC",
     "indices": {
         "NIFTY 50": {
             "rolling_3Y": 13.84
@@ -172,7 +172,7 @@
             "q2": 5.59,
             "q3": 5.45,
             "top_3": [
-                "Mahindra Manulife Liquid Fund (6.65%)",
+                "Mahindra Manulife Liquid Fund (6.66%)",
                 "Canara Robeco Liquid Fund  - GROWTH OPTION (6.53%)",
                 "BANK OF INDIA LIQUID FUND (6.44%)"
             ]
@@ -233,7 +233,7 @@
             "q3": 4.97,
             "top_3": [
                 "Mahindra Manulife Overnight Fund (5.89%)",
-                "BANK OF INDIA OVERNIGHT FUND (5.87%)",
+                "BANK OF INDIA OVERNIGHT FUND (5.88%)",
                 "Canara Robeco Overnight Fund  - GROWTH OPTION (5.79%)"
             ]
         },
