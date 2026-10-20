@@ -90,17 +90,14 @@ def calc_3y_median(df):
     df = df.sort_values('date').reset_index(drop=True)
     max_date = df['date'].max()
     
-    # 1. Restrict evaluation window strictly to the trailing 3 years
     eval_start_date = max_date - pd.DateOffset(years=3)
     eval_df = df[df['date'] >= eval_start_date].copy()
     if eval_df.empty: 
         return None
         
-    # 2. Exact Calendar Math: Find the exact target date 3 years prior
     eval_df['target_date'] = eval_df['date'] - pd.DateOffset(years=3)
     lookup_df = df[['date', 'nav']].rename(columns={'date': 'lookup_date', 'nav': 'past_nav'})
     
-    # 3. Match each date with the closest prior trading day
     merged = pd.merge_asof(
         eval_df.sort_values('target_date'), 
         lookup_df.sort_values('lookup_date'), 
@@ -111,15 +108,17 @@ def calc_3y_median(df):
     
     merged = merged.dropna(subset=['past_nav'])
     
-    # 4. Reject invalid matches (e.g., fund didn't exist 3 years prior to a specific date)
-    merged['gap'] = (merged['target_date'] - merged['lookup_date']).dt.days
-    valid_rolls = merged[merged['gap'] <= 15].copy() # 15-day tolerance for market holidays
+    merged['gap_to_target'] = (merged['target_date'] - merged['lookup_date']).dt.days
+    valid_rolls = merged[merged['gap_to_target'] <= 15].copy() 
     
     if len(valid_rolls) < 50: 
         return None 
     
-    # 5. Calculate CAGR and Median
-    valid_rolls['cagr'] = ((valid_rolls['nav'] / valid_rolls['past_nav']) ** (1 / 3)) - 1
+    # Exact Day Count Math
+    valid_rolls['exact_days'] = (valid_rolls['date'] - valid_rolls['lookup_date']).dt.days
+    valid_rolls = valid_rolls[valid_rolls['exact_days'] > 0]
+    
+    valid_rolls['cagr'] = ((valid_rolls['nav'] / valid_rolls['past_nav']) ** (365.25 / valid_rolls['exact_days'])) - 1
     
     return round(valid_rolls['cagr'].median() * 100, 2)
 
