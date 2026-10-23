@@ -1,8 +1,8 @@
 {
-    "last_updated": "2026-10-21 23:49:55 UTC",
+    "last_updated": "2026-10-22 23:47:49 UTC",
     "indices": {
         "NIFTY 50": {
-            "rolling_3Y": 13.69
+            "rolling_3Y": 13.68
         },
         "NIFTY NEXT 50": {
             "rolling_3Y": 18.92
@@ -14,13 +14,13 @@
             "rolling_3Y": 23.63
         },
         "NIFTY SMALLCAP 250": {
-            "rolling_3Y": 22.67
+            "rolling_3Y": 22.66
         },
         "NIFTY LARGE MIDCAP 250": {
-            "rolling_3Y": 17.6
+            "rolling_3Y": 17.59
         },
         "NASDAQ 100": {
-            "rolling_3Y": 23.41
+            "rolling_3Y": 23.43
         },
         "NIFTY LIQUID INDEX": {
             "rolling_3Y": 6.88
@@ -29,7 +29,7 @@
     "peer_groups": {
         "Aggressive Hybrid": {
             "q1": 16.86,
-            "q2": 15.09,
+            "q2": 15.08,
             "q3": 13.65,
             "top_3": [
                 "JM Aggressive Hybrid Fund  - Annual Bonus Option - Principal Units (22.3%)",
@@ -49,22 +49,22 @@
         },
         "Balanced Advantage": {
             "q1": 13.7,
-            "q2": 12.94,
+            "q2": 12.93,
             "q3": 11.52,
             "top_3": [
-                "HDFC Balanced Advantage Fund (20.8%)",
-                "quant Dynamic Asset Allocation Fund (16.05%)",
+                "HDFC Balanced Advantage Fund (20.78%)",
+                "quant Dynamic Asset Allocation Fund (16.04%)",
                 "Baroda BNP Paribas Balanced Advantage Fund (14.86%)"
             ]
         },
         "Banking & PSU": {
             "q1": 7.08,
-            "q2": 6.92,
-            "q3": 6.81,
+            "q2": 6.91,
+            "q3": 6.83,
             "top_3": [
                 "UTI Banking & PSU Debt Fund (7.61%)",
-                "ICICI Prudential Banking and PSU Debt Fund (7.24%)",
-                "Franklin India Banking & PSU Debt Fund (7.21%)"
+                "ICICI Prudential Banking and PSU Debt Fund (7.23%)",
+                "Franklin India Banking & PSU Debt Fund (7.22%)"
             ]
         },
         "Conservative Hybrid": {
@@ -84,7 +84,7 @@
             "top_3": [
                 "BARODA BNP PARIBAS CORPORATE BOND FUND (7.99%)",
                 "Tata Corporate Bond Fund (7.57%)",
-                "AXIS Corporate Bond Fund (7.48%)"
+                "AXIS Corporate Bond Fund (7.47%)"
             ]
         },
         "Credit Risk": {
@@ -98,42 +98,42 @@
             ]
         },
         "ELSS": {
-            "q1": 19.38,
-            "q2": 17.79,
+            "q1": 19.37,
+            "q2": 17.77,
             "q3": 16.34,
             "top_3": [
-                "SBI ELSS Tax Saver Fund (25.01%)",
-                "Motilal Oswal ELSS Tax Saver Fund (24.74%)",
+                "SBI ELSS Tax Saver Fund (25.0%)",
+                "Motilal Oswal ELSS Tax Saver Fund (24.73%)",
                 "HDFC ELSS - Tax Saver Fund (22.84%)"
             ]
         },
         "Equity Savings": {
-            "q1": 11.58,
+            "q1": 11.56,
             "q2": 10.86,
-            "q3": 9.08,
+            "q3": 9.07,
             "top_3": [
-                "HSBC Equity Savings Fund (14.13%)",
-                "Sundaram Equity Savings Fund (Formerly Known as Principal Equity Savings Fund)  - GROWTH (12.54%)",
+                "HSBC Equity Savings Fund (14.12%)",
+                "Sundaram Equity Savings Fund (Formerly Known as Principal Equity Savings Fund)  - GROWTH (12.53%)",
                 "Kotak Equity Savings Fund (12.51%)"
             ]
         },
         "Flexi Cap": {
             "q1": 20.02,
             "q2": 17.34,
-            "q3": 15.06,
+            "q3": 15.05,
             "top_3": [
-                "JM Flexi Cap Fund (24.86%)",
+                "JM Flexi Cap Fund (24.85%)",
                 "HDFC Flexi Cap Fund (23.81%)",
                 "BANK OF INDIA FLEXI CAP FUND (23.71%)"
             ]
         },
         "Focused": {
-            "q1": 18.6,
-            "q2": 17.73,
-            "q3": 15.86,
+            "q1": 18.59,
+            "q2": 17.71,
+            "q3": 15.85,
             "top_3": [
                 "HDFC Focused Fund (24.79%)",
-                "ICICI Prudential Focused Fund (23.58%)",
+                "ICICI Prudential Focused Fund (23.57%)",
                 "Invesco India Focused Fund (23.25%)"
             ]
         },
@@ -143,18 +143,18 @@
             "q3": 6.39,
             "top_3": [
                 "UTI 10 year Constant Maturity Gilt Fund (7.79%)",
-                "ICICI Prudential Gilt Fund (7.34%)",
-                "Bandhan 10 year Constant Maturity Gilt Fund (7.23%)"
+                "ICICI Prudential Gilt Fund (7.33%)",
+                "Bandhan 10 year Constant Maturity Gilt Fund (7.22%)"
             ]
         },
         "Large & Mid Cap": {
-            "q1": 21.42,
+            "q1": 21.41,
             "q2": 19.73,
-            "q3": 17.62,
+            "q3": 17.6,
             "top_3": [
                 "Motilal Oswal Large and Midcap Fund (26.77%)",
                 "Bandhan Large & Mid Cap Fund (25.22%)",
-                "Invesco India Large & Mid Cap Fund (23.79%)"
+                "Invesco India Large & Mid Cap Fund (23.78%)"
             ]
         },
         "Large Cap": {
@@ -183,16 +183,16 @@
             "q3": 6.29,
             "top_3": [
                 "UTI Medium to Long Term Fund (8.27%)",
-                "Aditya Birla Sun Life Long Term Fund  - GROWTH (7.54%)",
-                "LIC MF Medium to Long Term Fund (7.25%)"
+                "Aditya Birla Sun Life Long Term Fund  - GROWTH (7.53%)",
+                "LIC MF Medium to Long Term Fund (7.26%)"
             ]
         },
         "Mid Cap": {
-            "q1": 26.0,
-            "q2": 22.59,
+            "q1": 25.98,
+            "q2": 22.58,
             "q3": 20.23,
             "top_3": [
-                "HDFC Mid Cap Fund (27.03%)",
+                "HDFC Mid Cap Fund (27.02%)",
                 "Edelweiss Mid Cap Fund (26.92%)",
                 "Invesco India Mid Cap Fund (26.66%)"
             ]
@@ -212,18 +212,18 @@
             "q2": 16.93,
             "q3": 16.09,
             "top_3": [
-                "Quant Multi Asset Allocation Fund (24.14%)",
-                "ICICI Prudential Multi Asset Allocation Fund (20.52%)",
+                "Quant Multi Asset Allocation Fund (24.13%)",
+                "ICICI Prudential Multi Asset Allocation Fund (20.51%)",
                 "UTI Multi Asset Allocation Fund (18.94%)"
             ]
         },
         "Multi Cap": {
             "q1": 21.49,
             "q2": 20.36,
-            "q3": 17.22,
+            "q3": 17.21,
             "top_3": [
-                "Nippon India Multi Cap Fund (24.84%)",
-                "Kotak Multi Cap Fund (24.36%)",
+                "Nippon India Multi Cap Fund (24.74%)",
+                "Kotak Multi Cap Fund (24.35%)",
                 "Axis Multicap Fund (22.6%)"
             ]
         },
@@ -232,7 +232,7 @@
             "q2": 6.15,
             "q3": 6.11,
             "top_3": [
-                "ICICI Prudential Overnight Fund (126.29%)",
+                "ICICI Prudential Overnight Fund (126.28%)",
                 "quant Overnight Fund (6.37%)",
                 "TRUSTMF Overnight Fund (6.31%)"
             ]
@@ -248,7 +248,7 @@
             ]
         },
         "Small Cap": {
-            "q1": 24.11,
+            "q1": 24.1,
             "q2": 21.96,
             "q3": 19.19,
             "top_3": [
@@ -268,13 +268,13 @@
             ]
         },
         "Value/Contra": {
-            "q1": 22.66,
+            "q1": 22.65,
             "q2": 20.36,
             "q3": 18.8,
             "top_3": [
-                "JM Value Fund (25.6%)",
-                "Quant Value Fund (23.29%)",
-                "Nippon India Value Fund (23.28%)"
+                "JM Value Fund (25.59%)",
+                "Quant Value Fund (23.27%)",
+                "Nippon India Value Fund (23.26%)"
             ]
         }
     }
