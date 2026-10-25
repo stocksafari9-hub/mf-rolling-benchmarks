@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-10-24 22:48:20 UTC",
+    "last_updated": "2026-10-25 22:57:12 UTC",
     "indices": {
         "NIFTY 50": {
             "rolling_3Y": 13.68
@@ -29,7 +29,7 @@
     "peer_groups": {
         "Aggressive Hybrid": {
             "q1": 16.86,
-            "q2": 15.01,
+            "q2": 15.07,
             "q3": 13.64,
             "top_3": [
                 "JM Aggressive Hybrid Fund (22.3%)",
@@ -78,9 +78,9 @@
             ]
         },
         "Corporate Bond": {
-            "q1": 7.39,
+            "q1": 7.37,
             "q2": 7.06,
-            "q3": 6.95,
+            "q3": 6.93,
             "top_3": [
                 "BARODA BNP PARIBAS CORPORATE BOND FUND (7.99%)",
                 "Tata Corporate Bond Fund (7.57%)",
@@ -158,9 +158,9 @@
             ]
         },
         "Large Cap": {
-            "q1": 16.93,
-            "q2": 15.86,
-            "q3": 14.58,
+            "q1": 16.8,
+            "q2": 15.84,
+            "q3": 14.25,
             "top_3": [
                 "Nippon India Large Cap Fund (20.9%)",
                 "ICICI Prudential Large Cap Fund (erstwhile Bluechip Fund) (18.94%)",
@@ -168,7 +168,7 @@
             ]
         },
         "Liquid": {
-            "q1": 6.92,
+            "q1": 6.93,
             "q2": 6.89,
             "q3": 6.75,
             "top_3": [
@@ -199,8 +199,8 @@
         },
         "Money Market": {
             "q1": 7.29,
-            "q2": 7.24,
-            "q3": 7.1,
+            "q2": 7.22,
+            "q3": 7.08,
             "top_3": [
                 "Tata Money Market Fund (7.4%)",
                 "Mirae Asset Money Market Fund (7.4%)",
@@ -232,7 +232,7 @@
             "q2": 6.15,
             "q3": 6.11,
             "top_3": [
-                "ICICI Prudential Overnight Fund (126.28%)",
+                "ICICI Prudential Overnight Fund (126.29%)",
                 "quant Overnight Fund (6.37%)",
                 "TRUSTMF Overnight Fund (6.31%)"
             ]
@@ -259,7 +259,7 @@
         },
         "Ultra Short Duration": {
             "q1": 7.29,
-            "q2": 7.16,
+            "q2": 7.14,
             "q3": 7.01,
             "top_3": [
                 "HSBC Ultra Short to Short Term Fund (7.97%)",
