@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-10-23 23:41:33 UTC",
+    "last_updated": "2026-10-24 22:48:20 UTC",
     "indices": {
         "NIFTY 50": {
             "rolling_3Y": 13.68
@@ -29,7 +29,7 @@
     "peer_groups": {
         "Aggressive Hybrid": {
             "q1": 16.86,
-            "q2": 15.07,
+            "q2": 15.01,
             "q3": 13.64,
             "top_3": [
                 "JM Aggressive Hybrid Fund (22.3%)",
@@ -78,9 +78,9 @@
             ]
         },
         "Corporate Bond": {
-            "q1": 7.37,
+            "q1": 7.39,
             "q2": 7.06,
-            "q3": 6.93,
+            "q3": 6.95,
             "top_3": [
                 "BARODA BNP PARIBAS CORPORATE BOND FUND (7.99%)",
                 "Tata Corporate Bond Fund (7.57%)",
@@ -149,7 +149,7 @@
         },
         "Large & Mid Cap": {
             "q1": 21.41,
-            "q2": 19.71,
+            "q2": 19.7,
             "q3": 17.6,
             "top_3": [
                 "Motilal Oswal Large and Midcap Fund (26.76%)",
@@ -158,9 +158,9 @@
             ]
         },
         "Large Cap": {
-            "q1": 16.8,
-            "q2": 15.84,
-            "q3": 14.25,
+            "q1": 16.93,
+            "q2": 15.86,
+            "q3": 14.58,
             "top_3": [
                 "Nippon India Large Cap Fund (20.9%)",
                 "ICICI Prudential Large Cap Fund (erstwhile Bluechip Fund) (18.94%)",
@@ -199,8 +199,8 @@
         },
         "Money Market": {
             "q1": 7.29,
-            "q2": 7.22,
-            "q3": 7.08,
+            "q2": 7.24,
+            "q3": 7.1,
             "top_3": [
                 "Tata Money Market Fund (7.4%)",
                 "Mirae Asset Money Market Fund (7.4%)",
@@ -212,7 +212,7 @@
             "q2": 16.91,
             "q3": 16.09,
             "top_3": [
-                "Quant Multi Asset Allocation Fund (24.13%)",
+                "Quant Multi Asset Allocation Fund (24.12%)",
                 "ICICI Prudential Multi Asset Allocation Fund (20.51%)",
                 "UTI Multi Asset Allocation Fund (18.94%)"
             ]
@@ -259,7 +259,7 @@
         },
         "Ultra Short Duration": {
             "q1": 7.29,
-            "q2": 7.14,
+            "q2": 7.16,
             "q3": 7.01,
             "top_3": [
                 "HSBC Ultra Short to Short Term Fund (7.97%)",
