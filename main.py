@@ -25,7 +25,7 @@ def get_secure_session():
     return session
 
 def categorize_fund(name):
-    n = name.lower()
+    n = " ".join(name.lower().split())
     
     if not (("direct" in n or "dir" in n) and ("growth" in n or "gr" in n)): return None
     if any(x in n for x in ["regular", "reg", "idcw", "dividend", "div", "income distribution", "withdrawal"]): return None
@@ -107,17 +107,14 @@ def calc_3y_median(df):
     )
     
     merged = merged.dropna(subset=['past_nav'])
-    
     merged['gap_to_target'] = (merged['target_date'] - merged['lookup_date']).dt.days
     valid_rolls = merged[merged['gap_to_target'] <= 15].copy() 
     
     if len(valid_rolls) < 50: 
         return None 
     
-    # Exact Day Count Math
     valid_rolls['exact_days'] = (valid_rolls['date'] - valid_rolls['lookup_date']).dt.days
     valid_rolls = valid_rolls[valid_rolls['exact_days'] > 0]
-    
     valid_rolls['cagr'] = ((valid_rolls['nav'] / valid_rolls['past_nav']) ** (365.25 / valid_rolls['exact_days'])) - 1
     
     return round(valid_rolls['cagr'].median() * 100, 2)
@@ -144,6 +141,7 @@ def main():
                         
                         fund_name_parts = [c.strip() for c in cols[3:-2] if c.strip()]
                         full_fund_name = " - ".join(fund_name_parts)
+                        full_fund_name = " ".join(full_fund_name.split()) 
                         
                         nav_obj = {"nav": nav_val, "date": date_str, "schemeCode": scheme_code}
                         isin1, isin2 = cols[1].strip().upper(), cols[2].strip().upper()
@@ -154,6 +152,7 @@ def main():
                         if category:
                             if category not in categorized_funds: categorized_funds[category] = []
                             clean_name = full_fund_name.replace('- Direct Plan', '').replace('- Direct', '').replace('- Growth Option', '').replace('- Growth', '').replace('Growth', '').replace('-  ', '').strip()
+                            clean_name = " ".join(clean_name.split())
                             if not any(f['code'] == scheme_code for f in categorized_funds[category]):
                                 categorized_funds[category].append({"code": scheme_code, "name": clean_name})
                     except ValueError: pass
